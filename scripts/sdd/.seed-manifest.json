@@ -1,0 +1,33 @@
+{
+  "sddVersion": "0.1.0",
+  "deployed": "2026-09-17",
+  "files": {
+    "gate-control.mjs": "3dd16a2d094ad118abf16da2122ef0d39d3e639bf58cf6f4b7ad2946e6c46cc3",
+    "harvest.mjs": "50b8d4d2ccff5e8af68bfc2300aec78546f59c457096065fdddbf2cb10d84c0f",
+    "lib/config.mjs": "7eb2490d2dd25a096ce065bfaa22a1fd932f1872e2eb6f61a1d0ebac5be788d4",
+    "lifecycle.mjs": "1d1462624866232a568fc91e38433c6adf64f9f6ff70b24f6ed05941b1f2a171",
+    "skills.mjs": "4c032a9c85dff74ec417b70c90e5059387e5aba2e9a20976980de4107d50c2bc",
+    "suite-run.mjs": "0ebb0fb330a6e05f39c701b8bae664d0f1bc3f382c3a85e5f618868ed458fa55",
+    "tests/config.test.mjs": "32dec983f47f046d6564c526c3885f27791ee7b8eb6478e94d091b3939636440",
+    "tests/docs-artifact-index-tags.test.mjs": "0c8516b0fcc7517f2bf6fc6711e969656ca8bb21fbab52542210dea944d017c6",
+    "tests/docs-claude-md-stub.test.mjs": "b50d353778c9644502290b7a5cea14e0270d5f3ed737a1448a68fba2f79cfdff",
+    "tests/docs-claude-settings-permission-rules.test.mjs": "9695327c20f8a344d711093735e60cb601e4b44b02491103c8d47f19f62ed03a",
+    "tests/docs-falsifiability-gate.test.mjs": "8dbd32375b30e109c54c339643fe402b5a636c0d3b88e6994eef8bf9f1103bd7",
+    "tests/docs-friction-convention.test.mjs": "cc6791632ff2aa4e1b09dba3e67292a716449931fe1c21e2b11708cc8069f4fe",
+    "tests/docs-multi-agent-execution-contract.test.mjs": "e3ea03fe123618f893671b28b18ab26da362b1866e9b25ba49e233dc00e3178b",
+    "tests/docs-post-impl-verification-horizon.test.mjs": "a5b7966d70ab828dbb18774154b8898f180ab8a022da007c22f3a6b1f2a2de7c",
+    "tests/docs-post-impl-yolo.test.mjs": "d638ba28cd90320d9f2e1de36144107fe78ecaa3422dc1d70ff74f0be9c8d92a",
+    "tests/docs-sdd-run-log.test.mjs": "b9164312d8fb2131ecf8a74d8f0bc40688ac8cd3aad79aa7ae68bc82b801402a",
+    "tests/docs-skill-size-budget.test.mjs": "28c0bb6687ae3d85c5d7c96fac2006779a8fabc88fc5f35bd67515e2e972f8b7",
+    "tests/docs-story-id-references.test.mjs": "ca7ec4e278ee2d75d27dc5f955f7fd4bb3b400934ec28eb610b4e41d488f869a",
+    "tests/docs-workflow-blocks.test.mjs": "d5a905fc6361fe03d463a03a242d5449fdb677a7606836bde037913b300ab4ce",
+    "tests/docs-workflow-skill-state.test.mjs": "7231981b5d7ec2488e3d3a04a884956ab94383d20e02c93b5b02d1c5eae98e6a",
+    "tests/fixture.mjs": "4fd3f2634396e26df0cff2409e921c32436a6d4d71f6fd1035a12fe74621dc8b",
+    "tests/gate-control.test.mjs": "46acbc6629dc968f148418d0894952c6ab36661a5f257dc8e7a8b34f9eaf5108",
+    "tests/harvest.test.mjs": "27190918bc7211421a9d3303c9b14a5d860641a5f45a96e2f71ba215eb442fe5",
+    "tests/lib/docs-fixture.mjs": "38afa894b9f89afe36ac9e05c7430cba76b65f32bbca41ee6be4313e709ed26c",
+    "tests/lifecycle.test.mjs": "551eefd8420fe19f9af843275d9f5ea3f7f71a679606e9286b1aded479c270c9",
+    "tests/skills.test.mjs": "44e2a020c44e4cb3f5f0539933164112814935096530be17ad00e6e469451679",
+    "tests/suite-run.test.mjs": "dd87566144c633204d575afd09923f4aa16b0ea11900cfb3a607ab3e37066284"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "sdd-scaffolding",
+  "version": "0.1.0",
+  "description": "Seed spec-driven development (SDD) into a repository: the pre-impl → impl → post-impl skills, the weekly harvesters, the scripts that give them facts, the doc meta-tests, and the docs taxonomy and ledgers they use.",
+  "type": "module",
+  "bin": {
+    "sdd": "bin/sdd.mjs"
+  },
+  "files": [
+    "bin",
+    "src",
+    "seed"
+  ],
+  "scripts": {
+    "test": "node --test \"src/tests/*.test.mjs\" \"scripts/sdd/tests/*.test.mjs\"",
+    "test:cli": "node --test \"src/tests/*.test.mjs\"",
+    "test:docs": "node --test \"scripts/sdd/tests/*.test.mjs\"",
+    "self-deploy": "node bin/sdd.mjs deploy . --yes"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT",
+  "private": true
+}

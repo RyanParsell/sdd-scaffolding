@@ -1,0 +1,217 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sdd-scaffolding/sdd.config.schema.json",
+  "title": "SDD workflow configuration (skills/sdd.config.json)",
+  "description": "One file per repository. Every repo-specific value the SDD skills and scripts need: commands, document and ledger paths, branch and publish conventions, harnesses, harvest and sweep settings, per-skill size budgets. Read by scripts/sdd/lib/config.mjs and by every skill at the start of a run.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["sddVersion", "repo", "skills", "harvest", "sweep", "sizeBudgetBytes"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Relative or absolute reference to this schema."
+    },
+    "$comment": {
+      "type": "string",
+      "description": "Free-form note for readers of the file; ignored by the scripts."
+    },
+    "sddVersion": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "The seed version this config was written by (semver). `sdd upgrade` compares a target's scripts against this version's seed to tell an unchanged file from a locally edited one."
+    },
+    "repo": {
+      "type": "object",
+      "description": "Everything that is specific to this repository.",
+      "additionalProperties": false,
+      "required": ["name", "product", "defaultBranch", "publish", "branches", "commits", "commands", "testRunner", "sourceGlobs", "testGlobs", "docs", "ledgers", "agentSurfaces"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "description": "Short repository name used in slugs and file names (e.g. the `<name>-prd.md` doc names). The deploy substitutes it for the template's {{REPO_NAME}} placeholder; a raw template is not a valid config."
+        },
+        "product": {
+          "type": "string",
+          "minLength": 1,
+          "description": "How prose names the product."
+        },
+        "defaultBranch": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The trunk branch. impl refuses to run on it unless the plan declares a hotbug; post-impl publishes onto it."
+        },
+        "publish": {
+          "type": "string",
+          "enum": ["trunk-ff", "pr"],
+          "description": "How post-impl publishes a finished branch. `trunk-ff`: fast-forward the branch onto the default branch and push. `pr`: push the branch and open or refresh a pull request, with an optional CI watch and squash-merge (the yolo envelope is available only in this mode)."
+        },
+        "branches": {
+          "type": "object",
+          "description": "Branch name patterns; `{slug}` is substituted with the plan slug.",
+          "additionalProperties": false,
+          "required": ["feature", "bug"],
+          "properties": {
+            "feature": { "type": "string", "pattern": "\\{slug\\}", "description": "Pattern for a feature branch, e.g. `feature/{slug}`." },
+            "bug": { "type": "string", "pattern": "\\{slug\\}", "description": "Pattern for a bug-fix branch, e.g. `bug/{slug}`." }
+          }
+        },
+        "commits": {
+          "type": "object",
+          "description": "Conventional-commit type prefixes the skills use, and whether an attribution trailer is appended.",
+          "additionalProperties": false,
+          "required": ["feature", "bug", "docs", "plan", "attribution"],
+          "properties": {
+            "feature": { "type": "string", "minLength": 1, "description": "Prefix for an implementation commit on a feature plan (e.g. `feat`)." },
+            "bug": { "type": "string", "minLength": 1, "description": "Prefix for an implementation commit on a bug plan (e.g. `fix`)." },
+            "docs": { "type": "string", "minLength": 1, "description": "Prefix for a documentation commit (e.g. `docs`)." },
+            "plan": { "type": "string", "minLength": 1, "description": "Prefix for a plan or investigation commit (e.g. `docs(plan)`)." },
+            "attribution": { "type": "boolean", "description": "Whether commits carry an agent attribution trailer. false keeps commit messages free of it." }
+          }
+        },
+        "commands": {
+          "type": "object",
+          "description": "Shell commands the skills run. A skill names the key; the agent reads the value here at the start of the run. `TODO` markers left by a `--yes` deploy are flagged by the doc meta-tests.",
+          "additionalProperties": false,
+          "required": ["test", "docTests"],
+          "properties": {
+            "build": { "type": ["string", "null"], "minLength": 1, "description": "Builds the product. Null when the repo has no build step; suite-run then skips the build." },
+            "test": { "type": "string", "minLength": 1, "description": "Runs the full test suite. Required; suite-run.mjs parses its output with the `testRunner` adapter." },
+            "testFilter": { "type": ["string", "null"], "description": "Runs a filtered subset; `{filter}` is substituted. null when the runner has no filter form." },
+            "docTests": { "type": "string", "minLength": 1, "description": "Runs the doc meta-tests and script tests under scripts/sdd/tests/. Required after deploy." },
+            "lint": { "type": ["string", "null"], "description": "Optional lint command; null skips the lint step with an explicit row." },
+            "deployTool": { "type": ["string", "null"], "description": "Optional: how the built product reaches the machine (the \"deploy the tool\" phase). null skips that phase with an explicit row." },
+            "e2e": { "type": ["string", "null"], "description": "Optional end-to-end suite command; null when there is none." }
+          }
+        },
+        "testRunner": {
+          "type": "string",
+          "enum": ["dotnet", "vitest", "generic"],
+          "description": "Which suite-run.mjs adapter parses the test command's output. `generic` uses the exit code plus an optional `--expect-total`."
+        },
+        "sourceGlobs": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "description": "Globs matching product source files; used to classify a diff as source vs test vs docs."
+        },
+        "testGlobs": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "description": "Globs matching test files."
+        },
+        "docs": {
+          "type": "object",
+          "description": "Paths of the SDD documents and folders. Skills refer to a document by its key here, never by path.",
+          "additionalProperties": false,
+          "required": ["sdd", "prd", "architecture", "stories", "projectStructure", "profile", "plans", "artifacts", "epics", "research", "logs"],
+          "properties": {
+            "sdd": { "type": "string", "minLength": 1, "description": "The living-spec folder." },
+            "prd": { "type": "string", "minLength": 1, "description": "The product requirements document (FR-N / NFR-N with a Grounding Index)." },
+            "architecture": { "type": "string", "minLength": 1, "description": "The architecture document, including the Design Decisions record." },
+            "stories": { "type": "string", "minLength": 1, "description": "The stories document: an `## Index` over `## Area:` sections; story ids `S-YYMMDD.HHMMSSx`." },
+            "projectStructure": { "type": "string", "minLength": 1, "description": "The project-structure companion: the reverse architecture/area lookup and the full structure listing." },
+            "profile": { "type": "string", "minLength": 1, "description": "The per-repo SDD profile the skills read at the start of every run: stack conventions a config value cannot carry." },
+            "agentGuide": { "type": ["string", "null"], "description": "Optional agent-instruction document post-impl keeps in sync; null means not configured." },
+            "changeChecklist": { "type": ["string", "null"], "description": "Optional surfaces checklist post-impl's stale-doc audit derives from; null means not configured." },
+            "vocabulary": { "type": ["string", "null"], "description": "Optional product vocabulary document; null means not configured." },
+            "plans": { "type": "string", "minLength": 1, "description": "The plans folder — the impl skill's work queue." },
+            "artifacts": { "type": "string", "minLength": 1, "description": "The archived-plans folder with its tagged index." },
+            "epics": { "type": "string", "minLength": 1, "description": "The living-strategy folder." },
+            "research": { "type": "string", "minLength": 1, "description": "The investigation folder." },
+            "logs": { "type": "string", "minLength": 1, "description": "The operational-ledgers folder." }
+          }
+        },
+        "ledgers": {
+          "type": "object",
+          "description": "Paths of the four operational ledgers.",
+          "additionalProperties": false,
+          "required": ["friction", "testHealth", "runLog", "testRoi"],
+          "properties": {
+            "friction": { "type": "string", "minLength": 1, "description": "The F-N friction ledger; owns the SMALL-FIX-RULE, READ-PROTOCOL, EXPIRY-GATE and SCAN-WATERMARK blocks." },
+            "testHealth": { "type": "string", "minLength": 1, "description": "The T-N test-health ledger; owns the ANTIPATTERN-GATE block." },
+            "runLog": { "type": "string", "minLength": 1, "description": "The SDD run log — one row per completed trio run." },
+            "testRoi": { "type": "string", "minLength": 1, "description": "The test ROI ledger written by test-improve's ROI sweeps." }
+          }
+        },
+        "agentSurfaces": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Files post-impl keeps as stubs or in sync (e.g. CLAUDE.md, .github/copilot-instructions.md). May include product files such as an agent-guide command source."
+        },
+        "ui": {
+          "type": ["object", "null"],
+          "description": "Optional UI surface. null collapses the UI/smoke phases to \"no UI surface\".",
+          "additionalProperties": false,
+          "required": ["devServer", "smoke"],
+          "properties": {
+            "devServer": { "type": "string", "minLength": 1, "description": "Command that starts the UI dev server." },
+            "smoke": { "type": "string", "minLength": 1, "description": "Command or procedure that performs the UI smoke check." }
+          }
+        }
+      }
+    },
+    "skills": {
+      "type": "object",
+      "description": "Where the skills live and where they are mirrored.",
+      "additionalProperties": false,
+      "required": ["source", "project", "harnesses"],
+      "properties": {
+        "source": { "type": "string", "minLength": 1, "description": "The tracked skills folder (source of truth), relative to the repo root." },
+        "project": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+          "minItems": 1,
+          "uniqueItems": true,
+          "description": "The skill directory names `skills.mjs install` copies to each harness's project mirror."
+        },
+        "harnesses": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["claude", "copilot", "codex"] },
+          "minItems": 1,
+          "uniqueItems": true,
+          "description": "Deploy targets: claude → .claude/skills, copilot → .github/skills, codex → .agents/skills."
+        },
+        "retired": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+          "uniqueItems": true,
+          "description": "Skill names that used to be deployed and are swept from the mirrors by install; status reports a lingering copy as orphaned."
+        }
+      }
+    },
+    "harvest": {
+      "type": "object",
+      "description": "Settings for the sdd-skill-improve harvest (harvest.mjs).",
+      "additionalProperties": false,
+      "required": ["expiryDays", "topN", "patternWeeks", "digestWhatChars", "slugPrefixes", "seamPaths"],
+      "properties": {
+        "expiryDays": { "type": "integer", "minimum": 1, "description": "Age after which a scanned, still-open F-N may be auto-Declined under the EXPIRY-GATE (clock runs from max(Found, last scan))." },
+        "topN": { "type": "integer", "minimum": 1, "description": "How many clusters a harvest selects for action." },
+        "patternWeeks": { "type": "integer", "minimum": 1, "description": "How many weeks of run-log and ledger history the pattern scan covers." },
+        "digestWhatChars": { "type": "integer", "minimum": 1, "description": "Maximum characters of an entry's What happened included in the digest." },
+        "slugPrefixes": { "type": "array", "items": { "type": "string", "minLength": 1 }, "description": "Plan-slug prefixes that identify harvester-originated plans." },
+        "seamPaths": { "type": "array", "items": { "type": "string", "minLength": 1 }, "description": "Paths whose changes count as touching the SDD seam (skills, ledgers, scripts) in the pattern scan." }
+      }
+    },
+    "sweep": {
+      "type": "object",
+      "description": "Settings for the project-structure sweep that compares the listing document with the files on disk.",
+      "additionalProperties": false,
+      "required": ["listing", "scope", "extensions"],
+      "properties": {
+        "listing": { "type": "string", "minLength": 1, "description": "The document holding the Full Structure Listing (normally the project-structure doc)." },
+        "scope": { "type": "array", "items": { "type": "string", "minLength": 1 }, "minItems": 1, "description": "Globs for the directories the sweep covers." },
+        "extensions": { "type": "array", "items": { "type": "string", "pattern": "^[A-Za-z0-9]+$" }, "minItems": 1, "description": "File extensions (without the dot) the sweep counts." }
+      }
+    },
+    "sizeBudgetBytes": {
+      "type": "object",
+      "description": "One byte budget per skill, measured with CR stripped. 0 means \"set at first deploy to the deployed size\"; afterwards budgets only ratchet down (the SIZE-RULE).",
+      "additionalProperties": { "type": "integer", "minimum": 0 },
+      "propertyNames": { "pattern": "^[a-z0-9][a-z0-9-]*$" }
+    }
+  }
+}

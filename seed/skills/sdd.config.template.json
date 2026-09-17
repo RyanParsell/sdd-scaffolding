@@ -1,0 +1,77 @@
+{
+  "$schema": "./sdd.config.schema.json",
+  "$comment": "Configuration and facts for the SDD workflow skills and scripts. Every repo-specific value the skills need lives here or in the profile document (repo.docs.profile); the skills themselves are generic. Read by scripts/sdd/lib/config.mjs and by every skill at the start of a run. sizeBudgetBytes only ratchet down: a change that shrinks a skill lowers its budget in the same commit.",
+  "sddVersion": "0.1.0",
+  "repo": {
+    "name": "{{REPO_NAME}}",
+    "product": "{{PRODUCT}}",
+    "defaultBranch": "main",
+    "publish": "trunk-ff",
+    "branches": { "feature": "feature/{slug}", "bug": "bug/{slug}" },
+    "commits": { "feature": "feat", "bug": "fix", "docs": "docs", "plan": "docs(plan)", "attribution": false },
+    "commands": {
+      "build": "{{BUILD_COMMAND}}",
+      "test": "{{TEST_COMMAND}}",
+      "testFilter": null,
+      "docTests": "node --test \"scripts/sdd/tests/*.test.mjs\"",
+      "lint": null,
+      "deployTool": null,
+      "e2e": null
+    },
+    "testRunner": "generic",
+    "sourceGlobs": ["src/**"],
+    "testGlobs": ["tests/**"],
+    "docs": {
+      "sdd": "docs/sdd",
+      "prd": "docs/sdd/{{REPO_NAME}}-prd.md",
+      "architecture": "docs/sdd/{{REPO_NAME}}-architecture.md",
+      "stories": "docs/sdd/{{REPO_NAME}}-stories.md",
+      "projectStructure": "docs/sdd/{{REPO_NAME}}-project-structure.md",
+      "profile": "docs/sdd/{{REPO_NAME}}-sdd-profile.md",
+      "agentGuide": null,
+      "changeChecklist": null,
+      "vocabulary": null,
+      "plans": "docs/plans",
+      "artifacts": "docs/artifacts",
+      "epics": "docs/epics",
+      "research": "docs/research",
+      "logs": "docs/logs"
+    },
+    "ledgers": {
+      "friction": "docs/logs/friction-log.md",
+      "testHealth": "docs/logs/test-health-log.md",
+      "runLog": "docs/logs/sdd-run-log.md",
+      "testRoi": "docs/logs/test-roi-log.md"
+    },
+    "agentSurfaces": ["CLAUDE.md", ".github/copilot-instructions.md"],
+    "ui": null
+  },
+  "skills": {
+    "source": "skills",
+    "project": ["pre-impl", "impl", "post-impl", "sdd-skill-improve", "test-improve", "tdd", "git-recenter"],
+    "harnesses": ["claude", "copilot", "codex"],
+    "retired": []
+  },
+  "harvest": {
+    "expiryDays": 30,
+    "topN": 3,
+    "patternWeeks": 3,
+    "digestWhatChars": 700,
+    "slugPrefixes": ["sdd-skill-improve", "test-improve"],
+    "seamPaths": ["skills/", "docs/logs/friction-log.md", "docs/logs/test-health-log.md", "scripts/sdd/"]
+  },
+  "sweep": {
+    "listing": "docs/sdd/{{REPO_NAME}}-project-structure.md",
+    "scope": ["src/**", "tests/**", "scripts/**"],
+    "extensions": ["md", "json", "mjs", "js", "ts", "tsx", "cs", "py", "ps1", "sh", "yml", "yaml"]
+  },
+  "sizeBudgetBytes": {
+    "pre-impl": 0,
+    "impl": 0,
+    "post-impl": 0,
+    "sdd-skill-improve": 0,
+    "test-improve": 0,
+    "tdd": 0,
+    "git-recenter": 0
+  }
+}

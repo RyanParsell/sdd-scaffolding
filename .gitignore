@@ -1,0 +1,9 @@
+# node
+node_modules/
+
+# Harness skill mirrors — output of `node scripts/sdd/skills.mjs install`; the tracked source of truth is skills/ (matched at any depth so a run from a subdirectory cannot be committed).
+**/.claude/skills/
+**/.github/skills/
+**/.agents/skills/
+.claude/settings.local.json
+.claude/worktrees/

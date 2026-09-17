@@ -1,0 +1,28 @@
+{
+  "includeCoAuthoredBy": false,
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PROJECT_DIR}/scripts/sdd/lifecycle.mjs\" --harness claude --event session-start || echo '{\"systemMessage\":\"This repo uses pre-impl -> impl -> post-impl. Start repository changes with the pre-impl skill.\",\"hookSpecificOutput\":{\"hookEventName\":\"SessionStart\",\"additionalContext\":\"This repo uses pre-impl -> impl -> post-impl. Start repository changes with the pre-impl skill.\"}}'",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash|PowerShell|Edit|Write|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PROJECT_DIR}/scripts/sdd/lifecycle.mjs\" --harness claude --event pre-tool-use || echo '{\"systemMessage\":\"This repo uses pre-impl -> impl -> post-impl. Start repository changes with the pre-impl skill.\",\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"This repo uses pre-impl -> impl -> post-impl. Start repository changes with the pre-impl skill.\"}}'",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

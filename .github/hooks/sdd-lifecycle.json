@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "type": "command",
+        "bash": "node scripts/sdd/lifecycle.mjs --harness copilot --event session-start || printf '%s\\n' '{\"type\":\"progress\",\"message\":\"This repo uses pre-impl -> impl -> post-impl. Start repository changes with the pre-impl skill.\"}' '{\"additionalContext\":\"This repo uses pre-impl -> impl -> post-impl. Start repository changes with the pre-impl skill.\"}'",
+        "powershell": "node scripts/sdd/lifecycle.mjs --harness copilot --event session-start; if ($LASTEXITCODE -ne 0) { Write-Output '{\"type\":\"progress\",\"message\":\"This repo uses pre-impl -> impl -> post-impl. Start repository changes with the pre-impl skill.\"}'; Write-Output '{\"additionalContext\":\"This repo uses pre-impl -> impl -> post-impl. Start repository changes with the pre-impl skill.\"}' }",
+        "timeoutSec": 10
+      }
+    ],
+    "preToolUse": [
+      {
+        "type": "command",
+        "matcher": "bash|powershell|edit|create|apply_patch",
+        "bash": "node scripts/sdd/lifecycle.mjs --harness copilot --event pre-tool-use || printf '%s\\n' '{\"type\":\"progress\",\"message\":\"This repo uses pre-impl -> impl -> post-impl. Start repository changes with the pre-impl skill.\"}' '{}'",
+        "powershell": "node scripts/sdd/lifecycle.mjs --harness copilot --event pre-tool-use; if ($LASTEXITCODE -ne 0) { Write-Output '{\"type\":\"progress\",\"message\":\"This repo uses pre-impl -> impl -> post-impl. Start repository changes with the pre-impl skill.\"}'; Write-Output '{}' }",
+        "timeoutSec": 10
+      }
+    ]
+  }
+}
