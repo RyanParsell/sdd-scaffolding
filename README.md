@@ -3,7 +3,8 @@
 Seed spec-driven development into a repository in one command.
 
 ```
-npx sdd deploy <repo>      # or: node bin/sdd.mjs deploy <repo>
+git clone https://github.com/RyanParsell/sdd-scaffolding.git
+node sdd-scaffolding/bin/sdd.mjs deploy <repo>
 ```
 
 What a target receives:
